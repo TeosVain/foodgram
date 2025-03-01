@@ -12,7 +12,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
-    build: ../backend/
+    image: teosvain/foodgram_backend
     env_file: .env
     depends_on:
       - db
@@ -21,7 +21,7 @@ services:
       - media:/app/media
   frontend:
     container_name: foodgram-front
-    build: ../frontend
+    image: teosvain/foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
