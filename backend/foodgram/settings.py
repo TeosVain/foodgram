@@ -7,7 +7,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'SECRET_KEY')
 
 DEBUG = (os.getenv('DEBUG') == 'True')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', '158.160.6.136', 'atcosim.myvnc.com', ]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', '158.160.6.136', 'kittygramteos.ru', ]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -20,8 +20,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'django_filters',
-    'api.apps.ApiConfig',
     'user.apps.UserConfig',
+    'api.apps.ApiConfig',
     'recipes.apps.RecipesConfig',
 ]
 
@@ -54,6 +54,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
+
 
 DATABASES = {
     'default': {
