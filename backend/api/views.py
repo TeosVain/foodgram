@@ -128,7 +128,7 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeActionMixin):
             reverse('recipe-detail', kwargs={'pk': recipe.id})
         )
         shortlink, created = ShortLink.objects.get_or_create(
-            original_url=recipe.id,
+            original_recipe_id=recipe.id,
             short_code=utiles.generate_short_code_from_url(original_url)
         )
         short_url = f'{base_url}/s/{shortlink.short_code}'

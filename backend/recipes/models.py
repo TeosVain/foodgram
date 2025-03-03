@@ -48,6 +48,10 @@ class Recipe(models.Model):
     )
     favorited = models.ManyToManyField(User, related_name='favorite')
     shopping_carted = models.ManyToManyField(User, related_name='in_cart')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at'] 
 
     def __str__(self):
         return self.name
@@ -78,7 +82,7 @@ class ShortLink(models.Model):
         max_length=LENGTH_SHORT_LINK,
         unique=True,
     )
-    original_url = models.URLField()
+    original_recipe_id = models.IntegerField()
 
     def __str__(self):
-        return f'{self.short_code} -> {self.original_url}'
+        return f'{self.short_code} -> {self.original_recipe_id}'
