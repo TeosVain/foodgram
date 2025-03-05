@@ -3,7 +3,6 @@ from django.db.models import Sum
 
 from recipes.models import RecipeIngredient
 from foodgram.constants import LENGTH_SHORT_LINK
-import pdb
 
 
 def generate_short_code_from_url(url, length=LENGTH_SHORT_LINK):
