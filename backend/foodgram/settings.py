@@ -122,9 +122,9 @@ DJOSER = {
     'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',
     'LOGIN_FIELD': 'email',
     'SERIALIZERS': {
-        'user': 'user.serializers.UserReadSerializer',
-        'user_create': 'user.serializers.UserCreateSerializer',
-        'current_user': 'user.serializers.UserReadSerializer',
+        'user': 'api.serializers.UserReadSerializer',
+        'user_create': 'api.serializers.UserCreateSerializer',
+        'current_user': 'api.serializers.UserReadSerializer',
     },
     'PERMISSIONS': {
         'activation': ['rest_framework.permissions.AllowAny'],
