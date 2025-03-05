@@ -269,7 +269,7 @@ class CustomUserViewSet(views.UserViewSet):
             )
         user.subscriptions.remove(target_user)
         return Response(
-            {'detail': 'Вы отписались'},
+            {'detail': 'Вы отписались(а лера на работе сегодня)'},
             status=status.HTTP_204_NO_CONTENT
         )
 
