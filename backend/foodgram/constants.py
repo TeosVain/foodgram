@@ -6,3 +6,5 @@ LENGTH_SHORT_LINK = 6
 ACTION_LIST_USER_VIEWSET = [
     'me', 'update_avatar', 'subscribe', 'subscriptions', 'unsubscribe'
 ]
+MIN_VALUE = 1
+MAX_VALUE = 320000

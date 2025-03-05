@@ -1,23 +1,35 @@
+from django.contrib.auth import get_user_model
 from django.http import FileResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
+from djoser import views
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
+from api.filters import RecipeFilter
 from api.permissions import AdminPermission, UserAnonPermission
-from foodgram import utiles
-from foodgram.filters import RecipeFilter
-from recipes.models import (Ingredient, Recipe, ShortLink, Tag)
-from recipes.serializers import (
+from api.serializers import (
+    AvatarSerializer,
     IngredientSerializer,
     RecipeReadSerializer,
     RecipeWriteSerializer,
+    RecipeUserSerializer,
+    SubscribeUserSerializer,
+    SubscriptionSerializer,
     TagSerializer,
 )
-from user.serializers import RecipeUserSerializer
+from api import utiles
+from foodgram.constants import (
+    DEFAULT_PAGINATOR_LIMIT,
+    ACTION_LIST_USER_VIEWSET
+)
+from recipes.models import (Ingredient, Recipe, ShortLink, Tag)
+
+User = get_user_model()
 
 
 class RecipeActionMixin:
@@ -157,3 +169,125 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('name',)
     pagination_class = None
+
+
+def short_link_redirect(request, short_code):
+    """
+    Перенаправление с короткой ссылки на оригинальный URL.
+    """
+    short_link = get_object_or_404(ShortLink, short_code=short_code)
+    return redirect(
+        f'https://kittygramteos.ru/recipes/{short_link.original_recipe_id}'
+    )
+
+
+class ListUserViewSet(views.UserViewSet):
+
+    def get_queryset(self):
+        """Возвращаем всех пользователей, если запрашивается список"""
+        return User.objects.all()
+
+
+class CustomUserViewSet(views.UserViewSet):
+
+    def get_permissions(self):
+        if self.action in ACTION_LIST_USER_VIEWSET:
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAuthenticated]
+    )
+    def subscriptions(self, request):
+        """Получить список всех подписок пользователя с лимитом на рецепты"""
+        subscriptions = request.user.subscriptions.all()
+        paginator = LimitOffsetPagination()
+        paginator.default_limit = DEFAULT_PAGINATOR_LIMIT
+        result_page = paginator.paginate_queryset(subscriptions, request)
+        recipes_limit = int(
+            request.query_params.get('recipes_limit', DEFAULT_PAGINATOR_LIMIT)
+        )
+        users_data = []
+        for user in result_page:
+            user_data = SubscribeUserSerializer(
+                user, context={'request': request}
+            ).data
+            recipes = user.recipes.all()
+            recipe_paginator = LimitOffsetPagination()
+            recipe_paginator.default_limit = recipes_limit
+            recipe_page = recipe_paginator.paginate_queryset(recipes, request)
+            user_data['recipes'] = RecipeUserSerializer(
+                recipe_page, context={'request': request}, many=True
+            ).data
+            users_data.append(user_data)
+        return paginator.get_paginated_response(users_data)
+
+    @action(
+        detail=True,
+        methods=['post'],
+        permission_classes=[IsAuthenticated]
+    )
+    def subscribe(self, request, id=None):
+        user = request.user
+        data = {'target_user_id': id}
+        serializer = SubscriptionSerializer(
+            data=data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        target_user = serializer.save()
+        recipes_limit = int(
+            request.query_params.get('recipes_limit', DEFAULT_PAGINATOR_LIMIT)
+        )
+        user_data = SubscribeUserSerializer(
+            user, context={'request': request}
+        ).data
+        recipes = target_user.recipes.all()
+        paginator = LimitOffsetPagination()
+        paginator.default_limit = recipes_limit
+        recipe_page = paginator.paginate_queryset(recipes, request)
+        user_data['recipes'] = RecipeUserSerializer(
+            recipe_page, context={'request': request}, many=True
+        ).data
+        return Response(user_data, status=status.HTTP_201_CREATED)
+
+    @action(
+        detail=True,
+        methods=['delete'],
+        permission_classes=[IsAuthenticated]
+    )
+    def unsubscribe(self, request, id=None):
+        """Отписаться от пользователя"""
+        user = request.user
+        target_user = get_object_or_404(User, id=id)
+        if not user.subscriptions.filter(id=target_user.id).exists():
+            return Response(
+                {'error': 'Вы не подписаны'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        user.subscriptions.remove(target_user)
+        return Response(
+            {'detail': 'Вы отписались'},
+            status=status.HTTP_204_NO_CONTENT
+        )
+
+    @action(detail=False, methods=['put', 'delete'])
+    def update_avatar(self, request, *args, **kwargs):
+        user = request.user
+        serializer = AvatarSerializer(user, data=request.data)
+        if request.method == 'PUT':
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        if request.method == 'DELETE':
+            user.avatar.delete(save=True)
+            return Response(
+                {'avatar': None},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        return Response(
+            {'error': 'Method not allowed'},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )

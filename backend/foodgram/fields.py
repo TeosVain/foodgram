@@ -16,7 +16,7 @@ class Base64ImageField(serializers.ImageField):
                 img_data = base64.b64decode(imgstr)
                 if not ext or ext not in ['jpeg', 'jpg', 'png']:
                     ext = imghdr.what(None, h=img_data) or 'png'
-                filename = f"{uuid.uuid4()}.{ext}"
+                filename = f'{uuid.uuid4()}.{ext}'
                 return ContentFile(img_data, name=filename)
             except Exception as e:
                 raise serializers.ValidationError(

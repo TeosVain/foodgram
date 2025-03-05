@@ -1,7 +1,7 @@
 from django.urls import path
 from djoser.views import UserViewSet
 
-from user import views
+from api import views
 
 
 user_urlpatterns = [
