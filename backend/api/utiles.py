@@ -24,8 +24,10 @@ def create_shopping_list(user):
         .order_by('ingredient__name')
     )
     shopping_list_text = 'Список покупок:\n\n'
-    for name, data in ingredients_summary:
+    for ingredient in ingredients_summary:
         shopping_list_text += (
-            f"{name}: {data['amount']} {data['measurement_unit']}\n"
+            f"{ingredient['ingredient__name']}: "
+            f"{ingredient['total_amount']}"
+            f"{ingredient['ingredient__measurement_unit']}\n"
         )
     return shopping_list_text
