@@ -178,7 +178,7 @@ def short_link_redirect(request, short_code):
     """
     short_link = get_object_or_404(ShortLink, short_code=short_code)
     return redirect(
-        f'{request.build_absolute_uri}/recipes/{short_link.original_recipe_id}'
+        f'{utiles.get_base_url(request)}/recipes/{short_link.original_recipe_id}'
     )
 
 
