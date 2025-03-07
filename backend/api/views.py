@@ -75,8 +75,8 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeActionMixin):
     permission_classes = [
         UserAnonPermission | AdminPermission
     ]
-    filterset_class = RecipeFilter
-    pagination_class = LimitOffsetPagination
+    # pagination_class = LimitOffsetPagination
+    # filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
