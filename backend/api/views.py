@@ -9,11 +9,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from api.filters import (
-    CustomPageNumberPaginator,
-    IngredientFilter,
-    RecipeFilter
-)
+from api.filters import IngredientFilter, RecipeFilter
+from api.pagination import CustomPageNumberPaginator
 from api.permissions import AdminPermission, UserAnonPermission
 from api.serializers import (
     AvatarSerializer,
@@ -181,7 +178,7 @@ def short_link_redirect(request, short_code):
     """
     short_link = get_object_or_404(ShortLink, short_code=short_code)
     return redirect(
-        f'https://kittygramteos.ru/recipes/{short_link.original_recipe_id}'
+        f'{request.build_absolute_uri}/recipes/{short_link.original_recipe_id}'
     )
 
 
