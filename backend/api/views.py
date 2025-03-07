@@ -178,7 +178,7 @@ def short_link_redirect(request, short_code):
     """
     short_link = get_object_or_404(ShortLink, short_code=short_code)
     return redirect(
-        f'https://kittygramteos.ru/recipes/{short_link.original_recipe_id}'
+        f'https://{request.get_host()}/recipes/{short_link.original_recipe_id}'
     )
 
 

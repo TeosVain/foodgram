@@ -12,7 +12,7 @@ def generate_short_code_from_url(url, length=LENGTH_SHORT_LINK):
 
 def get_base_url(request):
     """Формирует базовый URL из запроса."""
-    return f'{request.scheme}://{request.get_host()}'
+    return f'{request.scheme}s://{request.get_host()}'
 
 
 def create_shopping_list(user):
