@@ -7,10 +7,9 @@ from djoser import views
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from api.filters import RecipeFilter
+from api.filters import RecipeFilter, CustomPageNumberPaginator
 from api.permissions import AdminPermission, UserAnonPermission
 from api.serializers import (
     AvatarSerializer,
@@ -75,8 +74,8 @@ class RecipeViewSet(viewsets.ModelViewSet, RecipeActionMixin):
     permission_classes = [
         UserAnonPermission | AdminPermission
     ]
-    # pagination_class = LimitOffsetPagination
-    # filterset_class = RecipeFilter
+    pagination_class = CustomPageNumberPaginator
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:

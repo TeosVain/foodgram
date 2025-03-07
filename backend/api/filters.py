@@ -1,6 +1,12 @@
 import django_filters
+from rest_framework.pagination import PageNumberPagination
 
 from recipes.models import Recipe, Tag
+
+
+class CustomPageNumberPaginator(PageNumberPagination):
+    page_size_query_param = 'limit'
+    page_size = 10
 
 
 class RecipeFilter(django_filters.FilterSet):
