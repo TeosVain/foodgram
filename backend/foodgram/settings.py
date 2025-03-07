@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'SECRET_KEY')
 
-DEBUG = (os.getenv('DEBUG') == 'True')
+DEBUG = True
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
@@ -112,7 +112,7 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'api.filters.CustomPageNumberPaginator',
+    'DEFAULT_PAGINATION_CLASS': 'api.pagination.CustomPageNumberPaginator',
     'PAGE_SIZE': 10
 }
 
