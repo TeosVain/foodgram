@@ -203,7 +203,7 @@ class CustomUserViewSet(views.UserViewSet):
     def subscriptions(self, request):
         """Получить список всех подписок пользователя с лимитом на рецепты"""
         subscriptions = request.user.subscriptions.all()
-        paginator = LimitOffsetPagination()
+        paginator = CustomPageNumberPaginator()
         paginator.default_limit = DEFAULT_PAGINATOR_LIMIT
         result_page = paginator.paginate_queryset(subscriptions, request)
         recipes_limit = int(
@@ -215,7 +215,7 @@ class CustomUserViewSet(views.UserViewSet):
                 user, context={'request': request}
             ).data
             recipes = user.recipes.all()
-            recipe_paginator = LimitOffsetPagination()
+            recipe_paginator = CustomPageNumberPaginator()
             recipe_paginator.default_limit = recipes_limit
             recipe_page = recipe_paginator.paginate_queryset(recipes, request)
             user_data['recipes'] = RecipeUserSerializer(
@@ -245,7 +245,7 @@ class CustomUserViewSet(views.UserViewSet):
             user, context={'request': request}
         ).data
         recipes = target_user.recipes.all()
-        paginator = LimitOffsetPagination()
+        paginator = CustomPageNumberPaginator()
         paginator.default_limit = recipes_limit
         recipe_page = paginator.paginate_queryset(recipes, request)
         user_data['recipes'] = RecipeUserSerializer(
