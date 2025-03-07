@@ -9,7 +9,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from api.filters import RecipeFilter, CustomPageNumberPaginator
+from api.filters import (
+    CustomPageNumberPaginator,
+    IngredientFilter,
+    RecipeFilter
+)
 from api.permissions import AdminPermission, UserAnonPermission
 from api.serializers import (
     AvatarSerializer,
@@ -167,7 +171,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
         UserAnonPermission | AdminPermission
     ]
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('name',)
+    filterset_class = IngredientFilter
     pagination_class = None
 
 

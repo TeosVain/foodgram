@@ -1,7 +1,7 @@
 import django_filters
 from rest_framework.pagination import PageNumberPagination
 
-from recipes.models import Recipe, Tag
+from recipes.models import Ingredient, Recipe, Tag
 
 
 class CustomPageNumberPaginator(PageNumberPagination):
@@ -54,3 +54,11 @@ class RecipeFilter(django_filters.FilterSet):
         if value:
             return queryset.filter(shopping_carted=user)
         return queryset.exclude(shopping_carted=user)
+
+
+class IngredientFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Ingredient
+        fields = ['name']
